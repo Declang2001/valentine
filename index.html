@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>For You 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--nv:#080b1a;--rs:#e8a0bf;--bl:#f5d5e0;--cr:#fef5f0;--gd:#d4a574;--ht:#e74c6f;--ht2:#d44068}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Lora',serif;background:var(--nv);color:var(--cr);-webkit-tap-highlight-color:transparent;user-select:none}
+
+canvas.BG{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none}
+#cStar{z-index:0}#cConf{z-index:100}
+
+.fh{position:fixed;pointer-events:none;z-index:0;opacity:0;animation:fhA linear infinite}
+@keyframes fhA{0%{opacity:0;transform:translateY(100vh) rotate(0)}8%{opacity:.45}92%{opacity:.45}100%{opacity:0;transform:translateY(-8vh) rotate(300deg)}}
+
+.S{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;opacity:0;visibility:hidden;transition:opacity .8s,visibility 0s .8s}
+.S.on{opacity:1;visibility:visible;transition:opacity .8s,visibility 0s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleUp{from{opacity:0;transform:scale(.93) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:.2}}
+@keyframes heartBeat{0%,100%{transform:scale(1)}14%{transform:scale(1.2)}28%{transform:scale(1)}42%{transform:scale(1.13)}56%{transform:scale(1)}}
+@keyframes solvedGlow{0%,100%{box-shadow:inset 0 2px 8px rgba(0,0,0,.05)}50%{box-shadow:0 0 25px rgba(231,76,111,.3)}}
+@keyframes countPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+/* S1 — ENVELOPE */
+.s1txt{font-family:'Great Vibes',cursive;font-size:clamp(1.4rem,5vw,2.4rem);color:var(--rs);text-shadow:0 0 35px rgba(232,160,191,.3);text-align:center;padding:0 2rem;line-height:1.5;opacity:0}
+.s1txt.v{animation:fadeUp 1.8s ease forwards}
+
+.envWrap{margin-top:2.5rem;opacity:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.envWrap.v{animation:fadeUp 1.4s ease .5s forwards}
+
+.envBox{position:relative;width:clamp(240px,64vw,320px);height:clamp(170px,45vw,230px);filter:drop-shadow(0 12px 30px rgba(0,0,0,.5))}
+
+.e-body{position:absolute;bottom:0;left:0;width:100%;height:68%;background:linear-gradient(175deg,#f0e0cc,#e6d2bb);border-radius:4px 4px 6px 6px;z-index:3}
+.e-bottom{position:absolute;bottom:0;left:0;width:100%;height:68%;clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%);background:linear-gradient(180deg,#f2e4d2,#e8d6c0);z-index:5}
+.e-back{position:absolute;top:0;left:0;width:100%;height:70%;clip-path:polygon(0 0,50% 100%,100% 0);background:linear-gradient(180deg,#d9c4a8,#e0cdb5);z-index:1}
+.e-flap{position:absolute;top:0;left:0;width:100%;height:55%;clip-path:polygon(0 0,50% 100%,100% 0);background:linear-gradient(180deg,#f3e7d5 0%,#ecdac5 100%);z-index:6;transform-origin:top center;transition:transform .9s cubic-bezier(.4,0,.2,1)}
+.envWrap.opened .e-flap{transform:rotateX(180deg)}
+
+.e-letter{position:absolute;top:18%;left:12%;right:12%;height:30%;background:#fff;border-radius:2px;z-index:2;transition:top .6s ease .3s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.e-letter::after{content:'';position:absolute;top:30%;left:15%;right:15%;height:3px;background:rgba(232,160,191,.2);border-radius:2px}
+.e-letter::before{content:'';position:absolute;top:50%;left:15%;right:25%;height:3px;background:rgba(232,160,191,.12);border-radius:2px}
+.envWrap.opened .e-letter{top:4%}
+
+.e-seal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;background:radial-gradient(circle at 36% 34%,#ee5577,#c5274a 60%,#8b1a35);border-radius:50%;z-index:7;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(200,40,70,.55),inset 0 -2px 5px rgba(0,0,0,.2);transition:transform .6s ease,opacity .4s ease}
+.e-seal::after{content:'♥';color:rgba(255,255,255,.85);font-size:18px}
+.envWrap.opened .e-seal{transform:translate(-50%,-50%) scale(0);opacity:0}
+
+.s1tap{margin-top:2rem;font-size:.8rem;color:rgba(232,160,191,.35);letter-spacing:3px;text-transform:lowercase;opacity:0}
+.s1tap.v{animation:fadeUp 1s ease 1.4s forwards,pulse 2.5s ease-in-out 2.5s infinite}
+
+/* S2 — PUZZLE */
+#s2{padding:1rem}
+.pzC{background:#fff;border-radius:22px;padding:clamp(1.2rem,4vw,2rem) clamp(1rem,3.5vw,1.6rem);max-width:380px;width:92%;box-shadow:0 22px 70px rgba(0,0,0,.5);text-align:center;opacity:0}
+.pzC.v{animation:scaleUp .7s ease forwards}
+.pzT{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,5vw,1.8rem);color:#1a1a2e;font-style:italic}
+.pzSub{font-family:'Caveat',cursive;font-size:clamp(.95rem,3.3vw,1.1rem);color:var(--ht);margin:.15rem 0 1rem}
+
+.pzG{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px;aspect-ratio:1;width:min(270px,70vw);margin:0 auto;background:#f3e8de;border-radius:12px;padding:4px;box-shadow:inset 0 2px 8px rgba(0,0,0,.05);transition:box-shadow .4s}
+.pzG.solved{animation:solvedGlow .7s ease 2}
+
+.pzI{border-radius:8px;cursor:pointer;background-size:300% 300%;transition:transform .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 5px rgba(0,0,0,.1)}
+.pzI:active:not(.mt){transform:scale(.92)}
+.pzI.mt{background:transparent!important;box-shadow:none;cursor:default;border:2px dashed #e8d8c8;border-radius:8px;opacity:.4}
+
+.pzM{margin-top:.7rem;font-size:.75rem;color:#bbb;letter-spacing:2px}
+.pzH{margin-top:.3rem;font-family:'Caveat',cursive;font-size:.9rem;color:#cba0a0;opacity:0;transition:opacity .5s}
+.pzH.sh{opacity:1}
+
+/* S3 — REASONS I LOVE YOU */
+#s3{padding:1rem}
+.rlCard{background:#fff;border-radius:22px;padding:clamp(1.5rem,4.5vw,2.2rem) clamp(1.2rem,4vw,1.8rem);max-width:380px;width:92%;box-shadow:0 22px 70px rgba(0,0,0,.5);text-align:center;opacity:0}
+.rlCard.v{animation:scaleUp .7s ease forwards}
+.rlTitle{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,4.5vw,1.6rem);color:#1a1a2e;font-style:italic;margin-bottom:.2rem}
+.rlSub{font-family:'Caveat',cursive;font-size:clamp(.9rem,3vw,1.05rem);color:var(--ht);margin-bottom:1.2rem}
+
+.rlGrid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:1.2rem}
+.rlFlip{width:calc(50% - 5px);aspect-ratio:1/.75;perspective:600px;cursor:pointer}
+.rlFlipInner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d}
+.rlFlip.flipped .rlFlipInner{transform:rotateY(180deg)}
+.rlFront,.rlBack{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:.6rem}
+.rlFront{background:linear-gradient(135deg,#fff0f5,#fce4ec);box-shadow:0 3px 12px rgba(0,0,0,.08);font-size:clamp(1.8rem,6vw,2.4rem)}
+.rlBack{background:linear-gradient(135deg,var(--ht),var(--ht2));color:#fff;transform:rotateY(180deg);font-family:'Caveat',cursive;font-size:clamp(.82rem,2.8vw,.95rem);line-height:1.4;text-align:center;box-shadow:0 3px 15px rgba(231,76,111,.3)}
+
+.rlProgress{font-size:.75rem;color:#bbb;letter-spacing:1px;margin-bottom:.8rem}
+.rlNext{display:none;padding:12px 40px;font-family:'Lora',serif;font-size:.9rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,var(--ht),var(--ht2));border:none;border-radius:50px;cursor:pointer;box-shadow:0 6px 22px rgba(231,76,111,.4);transition:transform .3s;animation:fadeUp .6s ease forwards}
+.rlNext:hover{transform:translateY(-2px)}
+.rlNext.sh{display:inline-block}
+
+/* S4 — LOVE LETTER */
+#s4{padding:1.2rem;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ltC{background:#fff;border-radius:22px;padding:clamp(1.8rem,5vw,2.5rem) clamp(1.2rem,4vw,2rem);max-width:400px;width:92%;box-shadow:0 22px 70px rgba(0,0,0,.5);text-align:center;opacity:0}
+.ltC.v{animation:scaleUp 1s ease forwards}
+.ltDear{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,4vw,1.4rem);color:#2a2a3e;font-style:italic;margin-bottom:1rem}
+.ltFr{width:clamp(140px,42vw,190px);height:clamp(140px,42vw,190px);margin:0 auto 1rem;border-radius:50%;border:4px solid var(--rs);box-shadow:0 0 0 7px rgba(232,160,191,.1),0 8px 28px rgba(0,0,0,.12);overflow:hidden}
+.ltFr img,.ltFr canvas{width:100%;height:100%;object-fit:cover;display:block}
+.ltComp{font-family:'Great Vibes',cursive;font-size:clamp(1.6rem,5.5vw,2.2rem);color:var(--ht);margin:.3rem 0 .6rem;opacity:0}
+.ltComp.v{animation:fadeUp .9s ease forwards}
+.ltMsg{font-family:'Lora',serif;font-size:clamp(.85rem,2.8vw,.95rem);color:#666;line-height:1.9;font-style:italic;margin-bottom:1.2rem;opacity:0;text-align:left;padding:0 .3rem}
+.ltMsg.v{animation:fadeUp .9s ease forwards}
+
+/* S5 — VALENTINE Q */
+#s5{padding:1.5rem}
+.vqC{background:#fff;border-radius:22px;padding:clamp(2rem,5.5vw,2.8rem) clamp(1.3rem,4.5vw,2rem);max-width:380px;width:92%;box-shadow:0 22px 70px rgba(0,0,0,.5);text-align:center;opacity:0}
+.vqC.v{animation:scaleUp .8s ease forwards}
+.vqQ{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,4.5vw,1.7rem);color:#1a1a2e;margin-bottom:1.5rem;line-height:1.4}
+.vqEmoji{font-size:clamp(2.5rem,8vw,3.5rem);margin-bottom:1rem;display:inline-block;animation:heartBeat 1.2s ease-in-out infinite}
+
+.btnY{display:inline-block;padding:14px 52px;font-family:'Lora',serif;font-size:1rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,var(--ht),var(--ht2));border:none;border-radius:50px;cursor:pointer;box-shadow:0 8px 28px rgba(231,76,111,.45);overflow:hidden;transition:transform .3s,box-shadow .3s}
+.btnY:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 36px rgba(231,76,111,.55)}
+.btnNw{margin-top:.7rem;min-height:40px;position:relative}
+.btnN{background:none;border:none;color:#ccc;font-family:'Lora',serif;font-size:.8rem;cursor:pointer;letter-spacing:1px;padding:8px 20px;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+
+/* S6 — CELEBRATE */
+.celW{text-align:center;z-index:10;opacity:0;padding:0 1.5rem}
+.celW.v{animation:scaleUp 1.2s ease forwards}
+.celH{font-size:clamp(3rem,10vw,5rem);display:inline-block;animation:heartBeat 1.2s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(231,76,111,.5))}
+.celT{font-family:'Great Vibes',cursive;font-size:clamp(2.4rem,8vw,3.8rem);color:var(--rs);text-shadow:0 0 40px rgba(232,160,191,.3);margin:.4rem 0;line-height:1.2}
+.celSu{font-family:'Lora',serif;font-size:clamp(.9rem,3vw,1.15rem);color:var(--bl);opacity:.7;letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem}
+.cdBox{background:rgba(255,255,255,.06);border:1px solid rgba(232,160,191,.15);border-radius:16px;padding:1rem 1.5rem;margin:1rem auto;max-width:320px;display:flex;justify-content:center;gap:clamp(.8rem,3vw,1.5rem);animation:countPulse 3s ease-in-out infinite}
+.cdItem{text-align:center}
+.cdNum{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,6vw,2.5rem);color:var(--rs);font-weight:700}
+.cdLbl{font-size:.65rem;color:rgba(232,160,191,.5);letter-spacing:2px;text-transform:uppercase;margin-top:.15rem}
+.celMsg{font-family:'Caveat',cursive;font-size:clamp(1rem,3.5vw,1.25rem);color:var(--bl);opacity:.65;margin-top:.8rem;line-height:1.5}
+.celR{margin-top:2rem;background:none;border:1px solid rgba(232,160,191,.2);color:var(--rs);font-family:'Lora',serif;font-size:.8rem;padding:9px 26px;border-radius:50px;cursor:pointer;letter-spacing:2px;transition:all .3s}
+.celR:hover{background:rgba(232,160,191,.08);border-color:var(--rs)}
+
+/* NO */
+.noW{text-align:center;z-index:10}
+.noT{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,4.5vw,1.8rem);color:var(--rs);font-style:italic;margin-bottom:.5rem}
+.noSu{font-family:'Lora',serif;color:var(--bl);opacity:.6;margin-bottom:2rem;font-size:.9rem}
+.noR{padding:12px 38px;font-family:'Lora',serif;font-size:.9rem;letter-spacing:2px;color:#fff;background:linear-gradient(135deg,var(--ht),var(--ht2));border:none;border-radius:50px;cursor:pointer;box-shadow:0 6px 22px rgba(231,76,111,.4);transition:transform .3s}
+.noR:hover{transform:translateY(-2px)}
+</style>
+</head>
+<body>
+
+<canvas id="cStar" class="BG"></canvas>
+<canvas id="cConf" class="BG"></canvas>
+
+<div class="S on" id="s1">
+  <div class="s1txt" id="s1t">A little something just for you, Adriana...</div>
+  <div class="envWrap" id="env" onclick="openEnv()">
+    <div class="envBox">
+      <div class="e-back"></div>
+      <div class="e-letter"></div>
+      <div class="e-flap"></div>
+      <div class="e-body"></div>
+      <div class="e-bottom"></div>
+      <div class="e-seal"></div>
+    </div>
+  </div>
+  <div class="s1tap" id="s1tap">tap to open</div>
+</div>
+
+<div class="S" id="s2">
+  <div class="pzC" id="pzC">
+    <div class="pzT">Dear Adriana...</div>
+    <div class="pzSub">piece us together ♥</div>
+    <div class="pzG" id="pzG"></div>
+    <div class="pzM" id="pzM"></div>
+    <div class="pzH" id="pzH">tap a tile next to the gap</div>
+  </div>
+</div>
+
+<div class="S" id="s3">
+  <div class="rlCard" id="rlCard">
+    <div class="rlTitle">Reasons I Love You</div>
+    <div class="rlSub">tap each heart to reveal ♥</div>
+    <div class="rlGrid" id="rlGrid"></div>
+    <div class="rlProgress" id="rlProg"></div>
+    <button class="rlNext" id="rlNext" onclick="goToLetter()">continue →</button>
+  </div>
+</div>
+
+<div class="S" id="s4">
+  <div class="ltC" id="ltC">
+    <div class="ltDear">My Dearest Adriana...</div>
+    <div class="ltFr" id="ltFr"></div>
+    <div class="ltComp" id="ltComp">...you are worth every mile.</div>
+    <div class="ltMsg" id="ltMsg">
+      380 miles. That's how far apart we are — Oakland to LA — but honestly, it might as well be nothing. Because the moment I hear your voice, the distance disappears. Every FaceTime call, every "goodnight" text, every countdown to seeing you again — it all reminds me that what we have is something most people never find.<br><br>
+      I know this Valentine's Day we won't be side by side. But you'll be here on the 17th, and I swear I'm already counting down every single hour. When I finally get to hold you again, I'm not letting go for a while.<br><br>
+      You make the distance worth it, Adriana. You make <em>everything</em> worth it.
+    </div>
+  </div>
+</div>
+
+<div class="S" id="s5">
+  <div class="vqC" id="vqC">
+    <div class="vqEmoji">💘</div>
+    <div class="vqQ">So... will you be my Valentine?</div>
+    <button class="btnY" onclick="sayYes()">Yes</button>
+    <div class="btnNw">
+      <button class="btnN" id="btnN" onmouseenter="dodge()" ontouchstart="dodge()" onclick="sayNo()">No</button>
+    </div>
+  </div>
+</div>
+
+<div class="S" id="s6">
+  <div class="celW" id="celW">
+    <div class="celH">💖</div>
+    <div class="celT">I love you,<br>Adriana</div>
+    <div class="celSu">Happy Valentine's Day</div>
+    <div class="cdBox">
+      <div class="cdItem"><div class="cdNum" id="cdD">0</div><div class="cdLbl">days</div></div>
+      <div class="cdItem"><div class="cdNum" id="cdH">0</div><div class="cdLbl">hours</div></div>
+      <div class="cdItem"><div class="cdNum" id="cdMi">0</div><div class="cdLbl">min</div></div>
+      <div class="cdItem"><div class="cdNum" id="cdS">0</div><div class="cdLbl">sec</div></div>
+    </div>
+    <div class="celMsg">until I get to hold you again ✈️<br>February 17, 2026</div>
+    <button class="celR" onclick="doReset()">start over ♥</button>
+  </div>
+</div>
+
+<div class="S" id="sNo">
+  <div class="noW">
+    <div class="noT">Hmm... wrong answer 😘</div>
+    <div class="noSu">You know you want to say yes</div>
+    <button class="noR" onclick="goBackQ()">Okay fine, ask me again</button>
+  </div>
+</div>
+
+<script>
+var cS=document.getElementById('cStar'),sx=cS.getContext('2d'),stars=[];
+function initStars(){cS.width=innerWidth;cS.height=innerHeight;stars=[];var n=Math.min(180,~~(cS.width*cS.height/5500));for(var i=0;i<n;i++)stars.push({x:Math.random()*cS.width,y:Math.random()*cS.height,r:Math.random()*1.3+.2,a:Math.random(),sp:Math.random()*.005+.001,d:Math.random()>.5?1:-1})}
+function drawStars(){sx.clearRect(0,0,cS.width,cS.height);for(var i=0;i<stars.length;i++){var s=stars[i];s.a+=s.sp*s.d;if(s.a>=1){s.a=1;s.d=-1}if(s.a<=.05){s.a=.05;s.d=1}sx.beginPath();sx.arc(s.x,s.y,s.r,0,Math.PI*2);sx.fillStyle='rgba(255,255,255,'+s.a*.6+')';sx.fill()}requestAnimationFrame(drawStars)}
+initStars();drawStars();addEventListener('resize',initStars);
+
+(function(){var h=['♥','♡','❤','💕'];for(var i=0;i<10;i++){var d=document.createElement('div');d.className='fh';d.textContent=h[~~(Math.random()*h.length)];d.style.left=Math.random()*100+'%';d.style.fontSize=(Math.random()*.8+.5)+'rem';d.style.animationDuration=(Math.random()*12+16)+'s';d.style.animationDelay=(Math.random()*20)+'s';d.style.color='hsl('+(340+Math.random()*25)+','+(55+Math.random()*35)+'%,'+(60+Math.random()*25)+'%)';document.body.appendChild(d)}})();
+
+function go(a,b,delay){delay=delay||0;setTimeout(function(){document.getElementById(a).classList.remove('on');setTimeout(function(){document.getElementById(b).classList.add('on')},500)},delay)}
+
+setTimeout(function(){document.getElementById('s1t').classList.add('v')},300);
+setTimeout(function(){document.getElementById('env').classList.add('v')},700);
+setTimeout(function(){document.getElementById('s1tap').classList.add('v')},1300);
+
+var envO=false;
+function openEnv(){if(envO)return;envO=true;document.getElementById('env').classList.add('opened');setTimeout(function(){go('s1','s2');setTimeout(initPuzzle,700)},1100)}
+
+var SH=18,ti=[0,1,2,3,4,5,6,7,8],ei=8,mc=0,sv=false,imgURL=null;
+function nb(i){var r=~~(i/3),c=i%3,n=[];if(r>0)n.push(i-3);if(r<2)n.push(i+3);if(c>0)n.push(i-1);if(c<2)n.push(i+1);return n}
+function chk(){for(var i=0;i<9;i++)if(ti[i]!==i)return false;return true}
+
+function drawCouple(sz){
+  var c=document.createElement('canvas');c.width=sz;c.height=sz;var x=c.getContext('2d'),s=sz/300;
+  var bg=x.createRadialGradient(150*s,150*s,0,150*s,150*s,210*s);bg.addColorStop(0,'#fff0f5');bg.addColorStop(1,'#f5d5e0');x.fillStyle=bg;x.fillRect(0,0,sz,sz);
+  function el(cx,cy,rx,ry,co){x.beginPath();x.ellipse(cx*s,cy*s,rx*s,ry*s,0,0,Math.PI*2);x.fillStyle=co;x.fill()}
+  function ci(cx,cy,r,co){x.beginPath();x.arc(cx*s,cy*s,r*s,0,Math.PI*2);x.fillStyle=co;x.fill()}
+  el(115,248,42,52,'#5b8fd4');el(115,190,13,16,'#f5d0a9');ci(115,150,44,'#f5d0a9');
+  x.beginPath();x.ellipse(115*s,127*s,47*s,34*s,0,Math.PI,0);x.fillStyle='#3a2518';x.fill();
+  x.beginPath();x.ellipse(98*s,122*s,22*s,20*s,-.3,Math.PI,0);x.fillStyle='#3a2518';x.fill();
+  el(102,155,6.5,7.5,'#1e1208');ci(100,153,2.2,'#fff');el(130,155,6.5,7.5,'#1e1208');ci(128,153,2.2,'#fff');
+  x.beginPath();x.arc(115*s,164*s,13*s,.1,Math.PI-.1);x.strokeStyle='#be7050';x.lineWidth=2.2*s;x.stroke();
+  el(90,164,9,5.5,'rgba(255,140,140,.3)');el(138,164,9,5.5,'rgba(255,140,140,.3)');
+  x.beginPath();x.moveTo(152*s,216*s);x.quadraticCurveTo(178*s,204*s,190*s,224*s);x.lineWidth=17*s;x.strokeStyle='#5b8fd4';x.lineCap='round';x.stroke();
+  el(195,250,40,50,'#e8a0bf');el(192,192,12,15,'#f5d0a9');ci(192,154,42,'#f5d0a9');
+  x.beginPath();x.ellipse(192*s,130*s,46*s,32*s,0,Math.PI,0);x.fillStyle='#4a2a18';x.fill();
+  x.beginPath();x.moveTo(150*s,134*s);x.quadraticCurveTo(147*s,210*s,154*s,268*s);x.lineTo(164*s,268*s);x.quadraticCurveTo(158*s,210*s,157*s,138*s);x.fillStyle='#4a2a18';x.fill();
+  x.beginPath();x.moveTo(234*s,134*s);x.quadraticCurveTo(238*s,210*s,234*s,268*s);x.lineTo(224*s,268*s);x.quadraticCurveTo(226*s,210*s,226*s,138*s);x.fillStyle='#4a2a18';x.fill();
+  el(180,158,5.8,7,'#1e1208');ci(178,156,2,'#fff');el(206,158,5.8,7,'#1e1208');ci(204,156,2,'#fff');
+  x.beginPath();x.moveTo(175*s,151*s);x.lineTo(172*s,147*s);x.moveTo(178*s,150*s);x.lineTo(177*s,146*s);x.moveTo(203*s,151*s);x.lineTo(201*s,147*s);x.moveTo(208*s,151*s);x.lineTo(210*s,147*s);x.strokeStyle='#1e1208';x.lineWidth=1.6*s;x.stroke();
+  x.beginPath();x.arc(192*s,167*s,11*s,.15,Math.PI-.15);x.strokeStyle='#be7050';x.lineWidth=2*s;x.stroke();
+  el(170,166,8,5,'rgba(255,140,140,.3)');el(215,166,8,5,'rgba(255,140,140,.3)');
+  function ht(hx,hy,hsz,co){x.save();x.translate(hx*s,hy*s);x.scale(s,s);x.beginPath();x.moveTo(0,hsz*.3);x.bezierCurveTo(-hsz*.5,-hsz*.3,-hsz,hsz*.1,0,hsz);x.bezierCurveTo(hsz,hsz*.1,hsz*.5,-hsz*.3,0,hsz*.3);x.fillStyle=co;x.fill();x.restore()}
+  ht(152,62,24,'#e74c6f');ht(168,40,17,'#ff7eb3');ht(140,48,13,'#ff9ec6');
+  imgURL=c.toDataURL();return c;
+}
+
+function initPuzzle(){
+  document.getElementById('pzC').classList.add('v');sv=false;mc=0;document.getElementById('pzM').textContent='';document.getElementById('pzG').classList.remove('solved');
+  ti=[0,1,2,3,4,5,6,7,8];ei=8;
+  for(var i=0;i<SH;i++){var n=nb(ei),p=n[~~(Math.random()*n.length)];ti[ei]=ti[p];ti[p]=8;ei=p}
+  while(chk()){var n=nb(ei),p=n[~~(Math.random()*n.length)];ti[ei]=ti[p];ti[p]=8;ei=p}
+  drawCouple(600);renderPz();
+  var h=document.getElementById('pzH');h.classList.add('sh');setTimeout(function(){h.classList.remove('sh')},3500);
+}
+
+function renderPz(){
+  var g=document.getElementById('pzG');g.innerHTML='';
+  for(var i=0;i<9;i++){var d=document.createElement('div');d.className='pzI';var v=ti[i];
+    if(v===8){d.classList.add('mt')}else{var c=v%3,r=~~(v/3);d.style.backgroundImage='url('+imgURL+')';d.style.backgroundSize='300% 300%';d.style.backgroundPosition=(c*50)+'% '+(r*50)+'%'}
+    (function(idx){d.addEventListener('click',function(){tapPz(idx)})})(i);g.appendChild(d)}
+}
+
+function tapPz(i){
+  if(sv)return;if(nb(ei).indexOf(i)===-1)return;
+  ti[ei]=ti[i];ti[i]=8;ei=i;mc++;document.getElementById('pzM').textContent='moves: '+mc;renderPz();
+  if(chk()){sv=true;var g=document.getElementById('pzG');g.classList.add('solved');
+    setTimeout(function(){g.innerHTML='';var f=document.createElement('div');f.style.cssText='grid-column:1/-1;grid-row:1/-1;border-radius:10px;background:url('+imgURL+') center/cover;opacity:0;transition:opacity .6s';g.appendChild(f);requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.opacity='1'})})},500);
+    setTimeout(function(){go('s2','s3');setTimeout(initReasons,700)},2200)}
+}
+
+var reasons=[
+  {emoji:'😊',text:'Your smile literally makes my whole day better'},
+  {emoji:'📱',text:'How you always text me back even when you\'re busy'},
+  {emoji:'✈️',text:'You make 380 miles feel like nothing'},
+  {emoji:'😂',text:'The way you laugh at my dumb jokes'},
+  {emoji:'💪',text:'How strong you are even when things get hard'},
+  {emoji:'🌙',text:'Our late night FaceTime calls I never want to end'}
+];
+var flipped=0;
+
+function initReasons(){
+  document.getElementById('rlCard').classList.add('v');flipped=0;updateProg();
+  document.getElementById('rlNext').classList.remove('sh');
+  var grid=document.getElementById('rlGrid');grid.innerHTML='';
+  for(var i=0;i<reasons.length;i++){
+    var flip=document.createElement('div');flip.className='rlFlip';
+    flip.innerHTML='<div class="rlFlipInner"><div class="rlFront">'+reasons[i].emoji+'</div><div class="rlBack">'+reasons[i].text+'</div></div>';
+    (function(el){el.addEventListener('click',function(){if(!el.classList.contains('flipped')){el.classList.add('flipped');flipped++;updateProg();if(flipped>=reasons.length)setTimeout(function(){document.getElementById('rlNext').classList.add('sh')},400)}})})(flip);
+    grid.appendChild(flip)}
+}
+function updateProg(){document.getElementById('rlProg').textContent=flipped+' / '+reasons.length+' revealed'}
+function goToLetter(){go('s3','s4');setTimeout(showLetter,700)}
+
+function showLetter(){
+  document.getElementById('ltC').classList.add('v');
+  if(imgURL){var f=document.getElementById('ltFr');f.innerHTML='';var im=new Image();im.src=imgURL;f.appendChild(im)}
+  setTimeout(function(){document.getElementById('ltComp').classList.add('v')},500);
+  setTimeout(function(){document.getElementById('ltMsg').classList.add('v')},1000);
+  setTimeout(function(){
+    var cont=document.createElement('button');cont.textContent='continue →';
+    cont.style.cssText='display:inline-block;margin-top:1rem;padding:12px 38px;font-family:Lora,serif;font-size:.88rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#e74c6f,#d44068);border:none;border-radius:50px;cursor:pointer;box-shadow:0 6px 22px rgba(231,76,111,.4);opacity:0;animation:fadeUp .6s ease forwards;transition:transform .3s';
+    cont.onclick=function(){go('s4','s5');setTimeout(showQ,700)};
+    document.getElementById('ltC').appendChild(cont)},2000);
+}
+
+function showQ(){document.getElementById('vqC').classList.add('v')}
+var dc=0;
+function dodge(){dc++;if(dc>4)return;var b=document.getElementById('btnN');b.style.transform='translate('+(Math.random()-.5)*160+'px,'+(Math.random()-.5)*40+'px)'}
+function sayYes(){fireConf();go('s5','s6');setTimeout(function(){document.getElementById('celW').classList.add('v');startCD()},600)}
+function sayNo(){go('s5','sNo')}
+function goBackQ(){go('sNo','s5');dc=0;document.getElementById('btnN').style.transform=''}
+
+var cdI=null;
+function startCD(){
+  if(cdI)clearInterval(cdI);
+  function u(){var t=new Date('2026-02-17T12:00:00-08:00').getTime(),n=Date.now(),df=Math.max(0,t-n);
+    var d=~~(df/864e5);df%=864e5;var h=~~(df/36e5);df%=36e5;var m=~~(df/6e4);df%=6e4;var s=~~(df/1e3);
+    document.getElementById('cdD').textContent=d;document.getElementById('cdH').textContent=h;
+    document.getElementById('cdMi').textContent=m;document.getElementById('cdS').textContent=s}
+  u();cdI=setInterval(u,1000);
+}
+
+var cC=document.getElementById('cConf'),cx2=cC.getContext('2d'),cp=[],cr=false;
+function rCC(){cC.width=innerWidth;cC.height=innerHeight}rCC();addEventListener('resize',rCC);
+function fireConf(){
+  cp=[];var co=['#e74c6f','#ff7eb3','#ffd1dc','#d4a574','#f5d5e0','#ff6b9d','#fff','#ffb6c1','#ff85a2'];
+  for(var i=0;i<280;i++)cp.push({x:cC.width*.5+(Math.random()-.5)*cC.width*.5,y:-20-Math.random()*cC.height*.6,w:Math.random()*10+4,h:Math.random()*6+3,c:co[~~(Math.random()*co.length)],vy:Math.random()*2.5+1.5,vx:(Math.random()-.5)*3,r:Math.random()*360,rs:(Math.random()-.5)*9,hr:Math.random()>.55});
+  if(!cr){cr=true;dC()}
+  setTimeout(function(){for(var i=0;i<120;i++)cp.push({x:Math.random()*cC.width,y:-10-Math.random()*200,w:Math.random()*8+3,h:Math.random()*5+2,c:co[~~(Math.random()*co.length)],vy:Math.random()*3+2,vx:(Math.random()-.5)*3,r:Math.random()*360,rs:(Math.random()-.5)*10,hr:Math.random()>.5})},700);
+}
+function dC(){
+  cx2.clearRect(0,0,cC.width,cC.height);var alive=false;
+  for(var i=0;i<cp.length;i++){var p=cp[i];if(p.y>cC.height+30)continue;alive=true;p.y+=p.vy;p.x+=p.vx;p.r+=p.rs;p.vy+=.035;
+    cx2.save();cx2.translate(p.x,p.y);cx2.rotate(p.r*Math.PI/180);cx2.fillStyle=p.c;
+    if(p.hr){var z=p.w*.45;cx2.beginPath();cx2.moveTo(0,z*.3);cx2.bezierCurveTo(-z*.5,-z*.3,-z,z*.1,0,z);cx2.bezierCurveTo(z,z*.1,z*.5,-z*.3,0,z*.3);cx2.fill()}
+    else cx2.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx2.restore()}
+  if(alive)requestAnimationFrame(dC);else{cr=false;cx2.clearRect(0,0,cC.width,cC.height)}
+}
+
+function doReset(){
+  if(cdI)clearInterval(cdI);
+  document.querySelectorAll('.S').forEach(function(s){s.classList.remove('on')});
+  document.getElementById('env').classList.remove('opened');
+  ['pzC','rlCard','ltC','vqC','celW'].forEach(function(id){document.getElementById(id).classList.remove('v')});
+  ['ltComp','ltMsg'].forEach(function(id){document.getElementById(id).classList.remove('v')});
+  document.getElementById('pzG').classList.remove('solved');document.getElementById('pzG').innerHTML='';
+  var ltc=document.getElementById('ltC');var btns=ltc.querySelectorAll('button');btns.forEach(function(b){b.remove()});
+  document.getElementById('btnN').style.transform='';dc=0;envO=false;
+  cx2.clearRect(0,0,cC.width,cC.height);
+  document.getElementById('s1').classList.add('on');
+}
+</script>
+</body>
+</html>
