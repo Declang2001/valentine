@@ -29,9 +29,10 @@ canvas.BG{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 .envBox{position:relative;width:clamp(240px,64vw,320px);height:clamp(170px,45vw,230px);filter:drop-shadow(0 12px 30px rgba(0,0,0,.5))}
 .e-body{position:absolute;bottom:0;left:0;width:100%;height:68%;background:linear-gradient(175deg,#f0e0cc,#e6d2bb);border-radius:4px 4px 6px 6px;z-index:3}
 .e-bottom{position:absolute;bottom:0;left:0;width:100%;height:68%;clip-path:polygon(0 0,50% 55%,100% 0,100% 100%,0 100%);background:linear-gradient(180deg,#f2e4d2,#e8d6c0);z-index:5}
-.e-back{position:absolute;top:0;left:0;width:100%;height:70%;clip-path:polygon(0 0,50% 100%,100% 0);background:linear-gradient(180deg,#d9c4a8,#e0cdb5);z-index:1}
+.e-back{position:absolute;top:0;left:0;width:100%;height:70%;clip-path:polygon(0 0,50% 100%,100% 0);background:linear-gradient(180deg,#d9c4a8,#e0cdb5);z-index:1;opacity:0;transition:opacity .3s}
 .e-flap{position:absolute;top:0;left:0;width:100%;height:55%;clip-path:polygon(0 0,50% 100%,100% 0);background:linear-gradient(180deg,#f3e7d5 0%,#ecdac5 100%);z-index:6;transform-origin:top center;transition:transform .9s cubic-bezier(.4,0,.2,1)}
 .envWrap.opened .e-flap{transform:rotateX(180deg)}
+.envWrap.opened .e-back{opacity:1}
 .e-letter{position:absolute;top:18%;left:12%;right:12%;height:30%;background:#fff;border-radius:2px;z-index:2;transition:top .6s ease .3s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .e-letter::after{content:'';position:absolute;top:30%;left:15%;right:15%;height:3px;background:rgba(232,160,191,.2);border-radius:2px}
 .e-letter::before{content:'';position:absolute;top:50%;left:15%;right:25%;height:3px;background:rgba(232,160,191,.12);border-radius:2px}
